@@ -2,9 +2,12 @@ import os, os.path, sys
 import urllib, zipfile
 import shutil, glob, fnmatch
 import subprocess, logging
+import argparse
 
 forge_dir = os.path.dirname(os.path.abspath(__file__))
+forge_mcp_conf_file = os.path.join(forge_dir, 'conf', 'mcp.cfg')
 mcp_dir = os.path.abspath('..')
+mcp_included_conf_file = os.path.join(mcp_dir, 'conf', 'mcp.cfg')
 src_dir = os.path.join(mcp_dir, 'src')
 
 sys.path.append(mcp_dir)
@@ -18,7 +21,19 @@ from forge import apply_patches, copytree, reset_logger, download_ff, cleanup_so
 def main():
     print '=================================== Setup Start ================================='
     
-    skipDecompile = len(sys.argv) > 1 and sys.argv[1] == '-skipdecompile'
+    parser = argparse.ArgumentParser(description='Sets up Forge with MCP.')
+    parser.add_argument('--skipdecompile', action='store_true', help='prevents decompilation during setup')
+    parser.add_argument('--preventconfigclobber', action='store_true', help='prevents overwriting mcp.cfg during setup')
+    args = parser.parse_args()
+    
+    skipDecompile = args.skipdecompile
+    preventConfigClobber = args.preventconfigclobber
+    # print "test args {} {}".format(args.skipdecompile, args.preventconfigclobber)
+	
+    if not preventConfigClobber:
+        shutil.copy2(forge_mcp_conf_file, mcp_included_conf_file)
+        print 'Successfully overwrote mcp.cfg! (If you want this to not happen, please use the --preventconfigclobber option!)'
+	
     if not skipDecompile:
         if not download_ff(mcp_dir):
             sys.exit(1)
