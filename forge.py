@@ -10,6 +10,7 @@ src_dir = os.path.join(mcp_dir, 'src')
 sys.path.append(mcp_dir)
 from runtime.pylibs.normlines import normaliselines
 from runtime.commands import cmdsplit
+from shutil import copyfile
 
 def apply_patches(patch_dir, target_dir):
     temp = os.path.abspath('temp.patch')
@@ -107,6 +108,8 @@ def reset_logger():
         log.removeHandler(log.handlers[0])
         
 def download_ff(mcp_path):
+    forge_bin_path = os.path.normpath(os.path.join(forge_dir, 'bin'))
+    forge_ff_path = os.path.normpath(os.path.join(forge_bin_path, 'fernflower.jar'))
     bin_path = os.path.normpath(os.path.join(mcp_path, 'runtime', 'bin'))
     ff_path = os.path.normpath(os.path.join(bin_path, 'fernflower.jar'))
 
@@ -114,15 +117,11 @@ def download_ff(mcp_path):
         return True
     
     try:
-        urllib.urlretrieve("http://goo.gl/PnJHp", 'fernflower.zip')
-        zf = zipfile.ZipFile('fernflower.zip')
-        zf.extract('fernflower.jar', bin_path)
-        zf.close()
-        os.remove('fernflower.zip')
-        print "Downloaded Fernflower successfully"
+        shutil.copy2(forge_ff_path, bin_path)
+        print "Copied Fernflower successfully"
         return True
     except:
-        print "Downloading Fernflower failed download manually from http://goo.gl/PnJHp"
+        print "Moving Fernflower failed! Find a copy of MCP 7.0a, and copy the file at (MCP directory)/runtime/bin/fernflower.jar from there to the equivalent path in this MCP directory!"
         return False
     
 version_reg = re.compile(r'(([a-z]+)Version[\s]+=[\s]+)(\d+);')       
