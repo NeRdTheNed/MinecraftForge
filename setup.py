@@ -5,9 +5,9 @@ import subprocess, logging
 import argparse
 
 forge_dir = os.path.dirname(os.path.abspath(__file__))
-forge_mcp_conf_file = os.path.join(forge_dir, 'conf', 'mcp.cfg')
+forge_mcp_conf = os.path.join(forge_dir, 'conf')
 mcp_dir = os.path.abspath('..')
-mcp_included_conf_file = os.path.join(mcp_dir, 'conf', 'mcp.cfg')
+mcp_included_conf = os.path.join(mcp_dir, 'conf')
 src_dir = os.path.join(mcp_dir, 'src')
 
 sys.path.append(mcp_dir)
@@ -31,8 +31,11 @@ def main():
     # print "test args {} {}".format(args.skipdecompile, args.preventconfigclobber)
 	
     if not preventConfigClobber:
-        shutil.copy2(forge_mcp_conf_file, mcp_included_conf_file)
-        print 'Successfully overwrote mcp.cfg! (If you want this to not happen, please use the --preventconfigclobber option!)'
+        if os.path.isdir(mcp_included_conf):
+            shutil.rmtree(mcp_included_conf)
+        
+        shutil.copytree(forge_mcp_conf, mcp_included_conf)
+        print 'Successfully overwrote MCP config folder with the Forge config folder (including patches)! (If you want this to not happen, please use the --preventconfigclobber option!)'
 	
     if not skipDecompile:
         if not download_ff(mcp_dir):
