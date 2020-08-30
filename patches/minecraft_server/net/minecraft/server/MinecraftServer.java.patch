@@ -240,7 +240,7 @@
       */
      public String getServerBrand()
      {
--        return "fml";
+-        return "vanilla";
 +        return "forge";
      }
  
